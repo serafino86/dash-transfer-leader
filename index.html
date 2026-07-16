@@ -550,14 +550,12 @@ function setLang(l) {
 //  CONSTANTS
 // ══════════════════════════════════════════════════════════════
 const ALLIANCES = [
-  {tag:'NgC',name:'Night Commando',rank:'#1 · 20.4B'},
-  {tag:'DJN',name:'THE RISE',rank:'#2 · 17.9B'},
-  {tag:'VNEM',name:'True Unity',rank:'#3 · 17.3B'},
-  {tag:'LdKy',name:'GottisUnitedKnights',rank:'#4 · 15.6B'},
-  {tag:'FmLy',name:'Family01',rank:'#5 · 14.1B'},
-  {tag:'BwF',name:'Better with Family',rank:'#6 · 13.9B'},
-  {tag:'CZNS',name:'CheZ NouS',rank:'#8 · 12.3B'},
-  {tag:'GLDY',name:'GLADİATORS',rank:'#9 · 8.3B'},
+  {tag:'NgC',name:'Night Commando',rank:'#1 · 26.6B'},
+  {tag:'DJN',name:'THE RISE',rank:'#2 · 23.4B'},
+  {tag:'VNEM',name:'True Unity',rank:'#3 · 21.9B'},
+  {tag:'LdKy',name:'GottisUnitedKnights',rank:'#4 · 20.9B'},
+  {tag:'CZNS',name:'CheZ NouS',rank:'#5 · 18.4B'},
+  {tag:'FmLy',name:'Family01',rank:'#6 · 17.6B'},
 ];
 const LANGS_EDITOR = [
   {code:'it',flag:'🇮🇹',label:'Italiano'},
@@ -590,17 +588,6 @@ function showTab(name) {
 // ══════════════════════════════════════════════════════════════
 //  DATA
 // ══════════════════════════════════════════════════════════════
-const DEMO = [
-  {ts:'2026-02-20 14:32',lang:'it',nickname:'DarkHunter88',power:220000000,server:'#1080',seat:'ELITE ⚡',intent:'yes_sure',alliance:'NgC',allianceName:'Night Commando',bio:'Top player, 5 stelle.',status:'In attesa',notes:''},
-  {ts:'2026-02-20 16:11',lang:'fr',nickname:'Soleil77',power:95000000,server:'#1091',seat:'CONTRIBUTOR',intent:'yes_sure',alliance:'DJN',allianceName:'THE RISE',bio:'Joueur actif.',status:'In attesa',notes:''},
-  {ts:'2026-02-21 09:05',lang:'en',nickname:'IronFist',power:55000000,server:'#1078',seat:'PIONEER',intent:'maybe',alliance:'VNEM',allianceName:'True Unity',bio:'Looking for active alliance.',status:'Accettato',notes:''},
-  {ts:'2026-02-21 11:22',lang:'de',nickname:'Sturm99',power:185000000,server:'#1083',seat:'ELITE ⚡',intent:'yes_sure',alliance:'NgC',allianceName:'Night Commando',bio:'Sehr aktiv, T10.',status:'In valutazione',notes:'Contattato'},
-  {ts:'2026-02-21 14:44',lang:'it',nickname:'LupoCacciatore',power:28000000,server:'#1095',seat:'FOLLOWER',intent:'no',alliance:'GLDY',allianceName:'GLADİATORS',bio:'',status:'In attesa',notes:''},
-  {ts:'2026-02-22 08:30',lang:'fr',nickname:'Chevalier_X',power:130000000,server:'#1088',seat:'CONTRIBUTOR',intent:'yes_sure',alliance:'LdKy',allianceName:'GottisUnitedKnights',bio:'Alliance chevalière.',status:'Rifiutato',notes:'Slot pieno'},
-  {ts:'2026-02-22 10:15',lang:'it',nickname:'NightWolf',power:62000000,server:'#1079',seat:'PIONEER',intent:'yes_sure',alliance:'FmLy',allianceName:'Family01',bio:'Cerco alleanza attiva.',status:'In attesa',notes:''},
-  {ts:'2026-02-22 13:00',lang:'en',nickname:'StrikeForce',power:310000000,server:'#1076',seat:'ELITE ⚡',intent:'yes_sure',alliance:'NgC',allianceName:'Night Commando',bio:'',status:'Accettato',notes:''},
-];
-
 async function loadData() {
   const t = UI[lang];
   document.getElementById('refreshLabel').textContent = t.translateLoading || '...';
@@ -623,9 +610,8 @@ async function loadData() {
     document.getElementById('refreshLabel').textContent = t.refreshed + ' ' + new Date().toLocaleTimeString();
     processData();
   } catch(err) {
-    // Fallback to demo
-    allRows = DEMO.map((r,i) => ({...r, _id:i}));
-    document.getElementById('refreshLabel').textContent = '⚠ Demo';
+    allRows = [];
+    document.getElementById('refreshLabel').textContent = '⚠ ' + (err.message || 'errore');
     processData();
   }
 }
