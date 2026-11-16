@@ -155,6 +155,11 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 .mact-no:hover{background:rgba(239,68,68,.1);}
 .mact-rev{color:var(--blue);border-color:rgba(0,180,216,.4);}
 .mact-rev:hover{background:rgba(0,180,216,.1);}
+.mact-wait{color:var(--gold);border-color:rgba(240,180,41,.4);}
+.mact-wait:hover{background:rgba(240,180,41,.1);}
+.mact:disabled{opacity:.35;cursor:default;background:transparent;}
+.row-acts{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.row-acts .mact{padding:6px 10px;font-size:10px;letter-spacing:.5px;}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;z-index:300;background:var(--surface2);border:1px solid var(--border2);padding:12px 20px;font-size:13px;font-weight:600;display:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));}
@@ -410,7 +415,7 @@ const UI = {
     modalBio:'Presentazione', modalStatus:'Stato', modalNotes:'Note Leader', modalDate:'Ricevuta il',
     modalNoBio:'Nessuna', modalNoNotes:'Nessuna nota',
     intentMap:{yes_sure:'Sì!', interested:'Vuole info', maybe:'Forse', no:'No'},
-    btnAccept:'✓ Accetta', btnReject:'✗ Rifiuta', btnReview:'⟳ In valutazione',
+    btnWait:'⏸ In attesa', btnAccept:'✓ Accetta', btnReject:'✗ Rifiuta', btnReview:'⟳ In valutazione',
     editorIntro:'<em>Come funziona:</em> scrivi il testo in italiano (requisiti + descrizione), poi clicca <em>Traduci automaticamente</em> — il sistema genera le 4 versioni linguistiche. Puoi rifinire ogni traduzione prima di salvare.',
     srcLangLabel:'Testo sorgente (italiano)', srcHint:'Scrivi qui · sarà tradotto nelle altre lingue',
     srcReqLabel:'Requisiti di accesso', srcDescLabel:'Descrizione alleanza',
@@ -444,7 +449,7 @@ const UI = {
     modalBio:'Présentation', modalStatus:'Statut', modalNotes:'Notes Leader', modalDate:'Reçu le',
     modalNoBio:'Aucune', modalNoNotes:'Aucune note',
     intentMap:{yes_sure:'Oui !', interested:'Veut infos', maybe:'Peut-être', no:'Non'},
-    btnAccept:'✓ Accepter', btnReject:'✗ Refuser', btnReview:'⟳ En évaluation',
+    btnWait:'⏸ En attente', btnAccept:'✓ Accepter', btnReject:'✗ Refuser', btnReview:'⟳ En évaluation',
     editorIntro:'<em>Comment ça marche :</em> écris le texte en italien (exigences + description), puis clique <em>Traduire automatiquement</em> — le système génère les 4 versions linguistiques.',
     srcLangLabel:'Texte source (italien)', srcHint:'Écris ici · sera traduit dans les autres langues',
     srcReqLabel:'Conditions d\'accès', srcDescLabel:'Description de l\'alliance',
@@ -478,7 +483,7 @@ const UI = {
     modalBio:'Presentation', modalStatus:'Status', modalNotes:'Leader Notes', modalDate:'Received on',
     modalNoBio:'None', modalNoNotes:'No notes',
     intentMap:{yes_sure:'Yes!', interested:'Wants info', maybe:'Maybe', no:'No'},
-    btnAccept:'✓ Accept', btnReject:'✗ Reject', btnReview:'⟳ Under review',
+    btnWait:'⏸ Pending', btnAccept:'✓ Accept', btnReject:'✗ Reject', btnReview:'⟳ Under review',
     editorIntro:'<em>How it works:</em> write the text in Italian (requirements + description), then click <em>Auto-translate</em> — the system generates all 4 language versions.',
     srcLangLabel:'Source text (Italian)', srcHint:'Write here · will be translated into other languages',
     srcReqLabel:'Access requirements', srcDescLabel:'Alliance description',
@@ -512,7 +517,7 @@ const UI = {
     modalBio:'Vorstellung', modalStatus:'Status', modalNotes:'Leader-Notizen', modalDate:'Erhalten am',
     modalNoBio:'Keine', modalNoNotes:'Keine Notizen',
     intentMap:{yes_sure:'Ja!', interested:'Will Infos', maybe:'Vielleicht', no:'Nein'},
-    btnAccept:'✓ Akzeptieren', btnReject:'✗ Ablehnen', btnReview:'⟳ In Prüfung',
+    btnWait:'⏸ Ausstehend', btnAccept:'✓ Akzeptieren', btnReject:'✗ Ablehnen', btnReview:'⟳ In Prüfung',
     editorIntro:'<em>So funktioniert es:</em> Schreib den Text auf Italienisch (Anforderungen + Beschreibung), dann klicke <em>Automatisch übersetzen</em> — das System erstellt alle 4 Sprachversionen.',
     srcLangLabel:'Quelltext (Italienisch)', srcHint:'Hier schreiben · wird in andere Sprachen übersetzt',
     srcReqLabel:'Zugangsbedingungen', srcDescLabel:'Allianz-Beschreibung',
@@ -756,7 +761,7 @@ function renderTable() {
       <td>${seatBadge(r.seat)}</td>
       <td><span class="ally-tag">[${esc(r.alliance)}]</span><br><span style="font-size:11px;color:var(--dim2)">${esc(r.allianceName)}</span></td>
       <td>${statusBadge(r.status, t)}</td>
-      <td><button class="act-btn" onclick="openModal(${r._id})">${t.btnDetails}</button></td>
+      <td><div class="row-acts">${statusButtons(r,t,false)}<button class="act-btn" onclick="openModal(${r._id})">${t.btnDetails}</button></div></td>
     </tr>`).join('');
 }
 
@@ -790,28 +795,30 @@ function openModal(id){
     <div class="detail-item full"><div class="detail-key">${t.modalStatus}</div><div class="detail-val">${statusBadge(r.status,t)}</div></div>
     <div class="detail-item full"><div class="detail-key">${t.modalNotes}</div><div class="detail-val" style="font-size:13px;font-weight:400">${esc(r.notes)||'<em style="color:var(--dim)">'+t.modalNoNotes+'</em>'}</div></div>
     <div class="detail-item full"><div class="detail-key">${t.modalDate}</div><div class="detail-val" style="font-family:var(--font-m);font-size:12px">${r.ts}</div></div>`;
-  document.getElementById('modalActions').innerHTML=`
-    <button class="mact mact-ok"  onclick="updateStatus(${id},'In attesa'===UI[lang].stWait?'In attesa':'In attesa')">${t.btnAccept}</button>
-    <button class="mact mact-ok"  onclick="updateStatus(${id},'Accettato')">${t.btnAccept}</button>
-    <button class="mact mact-no"  onclick="updateStatus(${id},'Rifiutato')">${t.btnReject}</button>
-    <button class="mact mact-rev" onclick="updateStatus(${id},'In valutazione')">${t.btnReview}</button>`;
-  // Fix: clean modal actions
-  document.getElementById('modalActions').innerHTML=`
-    <button class="mact mact-ok"  onclick="updateStatus(${id},'Accettato')">${t.btnAccept}</button>
-    <button class="mact mact-no"  onclick="updateStatus(${id},'Rifiutato')">${t.btnReject}</button>
-    <button class="mact mact-rev" onclick="updateStatus(${id},'In valutazione')">${t.btnReview}</button>`;
+  document.getElementById('modalActions').innerHTML=statusButtons(r,t,true);
   document.getElementById('modal').classList.add('open');
+}
+
+function statusButtons(r,t,review){
+  const b=(st,cls,lbl)=>`<button class="mact ${cls}" ${r.status===st?'disabled':''} onclick="event.stopPropagation();updateStatus(${r._id},'${st}')">${lbl}</button>`;
+  return b('In attesa','mact-wait',t.btnWait)+b('Accettato','mact-ok',t.btnAccept)+b('Rifiutato','mact-no',t.btnReject)
+    +(review?b('In valutazione','mact-rev',t.btnReview):'');
 }
 
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 
 async function updateStatus(id,newStatus){
   const r=allRows.find(x=>x._id===id); if(!r)return;
+  const old=r.status;
   r.status=newStatus; closeModal(); renderTable(); updateKPIs();
-  showToast(UI[lang].stOk + ' → ' + newStatus, 'ok');
   try {
-    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'updateStatus',rowIndex:id+2,status:newStatus})});
-  } catch(e){console.warn(e);}
+    const res=await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'updateStatus',rowIndex:id+2,status:newStatus})});
+    const j=await res.json(); if(!j.success)throw new Error(j.error);
+    showToast(r.nickname+' → '+newStatus,'ok');
+  } catch(e){
+    r.status=old; renderTable(); updateKPIs();
+    showToast('⚠ '+(e.message||'errore'),'err');
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
