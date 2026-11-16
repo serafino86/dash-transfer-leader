@@ -166,6 +166,19 @@ tbody td{padding:11px 14px;vertical-align:middle;}
   .tbl-wrap td:last-child{width:100%;}
   .row-acts .mact,.row-acts .act-btn{flex:1 1 auto;padding:10px 6px;font-size:11px;}
   .state-row{width:100%;}
+  /* telefono: prima le candidature, i numeri compatti, grafici nascosti */
+  .wrap{padding:0 12px 40px;}
+  .wrap .kpi-row{grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+  .kpi{padding:10px 10px;}
+  .kpi:nth-child(n+4){display:none;}
+  .kpi-label{font-size:9px;letter-spacing:1px;margin-bottom:4px;}
+  .kpi-value{font-size:24px;}
+  .kpi-sub{display:none;}
+  .charts-row{display:none;}
+  .filter-bar{padding:10px 12px;gap:6px;margin-bottom:14px;}
+  .filter-sep{display:none;}
+  .filter-chip{padding:7px 10px;}
+  .filter-bar input{width:100%;}
 }
 .mact{font-family:var(--font-d);font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 20px;border:1px solid;cursor:pointer;background:transparent;}
 .mact-ok{color:var(--green);border-color:rgba(34,197,94,.4);}
@@ -1020,5 +1033,6 @@ setLang('it');
 loadData();
 setInterval(loadData, 120000);
 </script>
+<footer style="text-align:center;padding:10px 12px 28px;font-family:var(--font-m);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);"><a href="https://serafino-resout.ch" target="_blank" rel="noopener" style="color:inherit">app by Serafino Résout</a></footer>
 </body>
 </html>
