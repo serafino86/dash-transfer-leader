@@ -442,7 +442,7 @@ const UI = {
     thSeat:'Sedia', thAlly:'Alleanza', thStatus:'Stato', thActions:'Azioni',
     stWait:'In attesa', stOk:'Accettato', stNo:'Rifiutato', stRev:'In valutazione',
     btnDetails:'👁 Dettagli',
-    modalPower:'Potenza', modalSeat:'Sedia', modalServer:'Server',
+    modalPower:'Potenza', modalT1:'Potenza T1', modalKills:'Uccisioni totali', modalSeat:'Sedia', modalServer:'Server',
     modalLang:'Lingua', modalAlly:'Alleanza', modalIntent:'Vuole #1105',
     modalBio:'Presentazione', modalStatus:'Stato', modalNotes:'Note Leader', modalDate:'Ricevuta il',
     modalNoBio:'Nessuna', modalNoNotes:'Nessuna nota',
@@ -476,7 +476,7 @@ const UI = {
     thSeat:'Siège', thAlly:'Alliance', thStatus:'Statut', thActions:'Actions',
     stWait:'En attente', stOk:'Accepté', stNo:'Refusé', stRev:'En évaluation',
     btnDetails:'👁 Détails',
-    modalPower:'Puissance', modalSeat:'Siège', modalServer:'Serveur',
+    modalPower:'Puissance', modalT1:'Puissance T1', modalKills:'Éliminations totales', modalSeat:'Siège', modalServer:'Serveur',
     modalLang:'Langue', modalAlly:'Alliance', modalIntent:'Veut #1105',
     modalBio:'Présentation', modalStatus:'Statut', modalNotes:'Notes Leader', modalDate:'Reçu le',
     modalNoBio:'Aucune', modalNoNotes:'Aucune note',
@@ -510,7 +510,7 @@ const UI = {
     thSeat:'Seat', thAlly:'Alliance', thStatus:'Status', thActions:'Actions',
     stWait:'Pending', stOk:'Accepted', stNo:'Rejected', stRev:'Under review',
     btnDetails:'👁 Details',
-    modalPower:'Power', modalSeat:'Seat', modalServer:'Server',
+    modalPower:'Power', modalT1:'T1 power', modalKills:'Total kills', modalSeat:'Seat', modalServer:'Server',
     modalLang:'Language', modalAlly:'Alliance', modalIntent:'Wants #1105',
     modalBio:'Presentation', modalStatus:'Status', modalNotes:'Leader Notes', modalDate:'Received on',
     modalNoBio:'None', modalNoNotes:'No notes',
@@ -544,7 +544,7 @@ const UI = {
     thSeat:'Sitz', thAlly:'Allianz', thStatus:'Status', thActions:'Aktionen',
     stWait:'Ausstehend', stOk:'Akzeptiert', stNo:'Abgelehnt', stRev:'In Prüfung',
     btnDetails:'👁 Details',
-    modalPower:'Stärke', modalSeat:'Sitz', modalServer:'Server',
+    modalPower:'Stärke', modalT1:'T1-Stärke', modalKills:'Kills gesamt', modalSeat:'Sitz', modalServer:'Server',
     modalLang:'Sprache', modalAlly:'Allianz', modalIntent:'Will #1105',
     modalBio:'Vorstellung', modalStatus:'Status', modalNotes:'Leader-Notizen', modalDate:'Erhalten am',
     modalNoBio:'Keine', modalNoNotes:'Keine Notizen',
@@ -675,6 +675,7 @@ async function loadData() {
       power:parseInt(r[3])||0, server:r[4]||'', seat:r[5]||'',
       intent:r[6]||'', alliance:r[7]||'', allianceName:r[8]||'',
       bio:r[9]||'', status:r[10]||'In attesa', notes:r[11]||'',
+      t1:parseInt(r[12])||0, kills:parseInt(r[13])||0,
     }));
     if (json.allianceTexts) allianceTexts = json.allianceTexts;
 
@@ -788,7 +789,7 @@ function renderTable() {
     <tr>
       <td class="td-ts">${i+1}</td>
       <td><span class="td-nick">${esc(r.nickname)}</span><br><span class="td-ts">${r.ts?.slice(0,10)||''}</span></td>
-      <td class="td-power">${fmtPower(r.power)}</td>
+      <td class="td-power">${fmtPower(r.power)}<br><span class="td-ts">T1 ${fmtPower(r.t1)} · ☠ ${fmtPower(r.kills)}</span></td>
       <td class="td-server">${esc(r.server)}</td>
       <td>${seatBadge(r.seat)}</td>
       <td><span class="ally-tag">[${esc(r.alliance)}]</span><br><span style="font-size:11px;color:var(--dim2)">${esc(r.allianceName)}</span></td>
@@ -818,6 +819,8 @@ function openModal(id){
   document.getElementById('modalTitle').textContent=r.nickname;
   document.getElementById('modalBody').innerHTML=`
     <div class="detail-item"><div class="detail-key">${t.modalPower}</div><div class="detail-val">${fmtPower(r.power)}</div></div>
+    <div class="detail-item"><div class="detail-key">${t.modalT1}</div><div class="detail-val">${fmtPower(r.t1)}</div></div>
+    <div class="detail-item"><div class="detail-key">${t.modalKills}</div><div class="detail-val">${fmtPower(r.kills)}</div></div>
     <div class="detail-item"><div class="detail-key">${t.modalSeat}</div><div class="detail-val">${seatBadge(r.seat)}</div></div>
     <div class="detail-item"><div class="detail-key">${t.modalServer}</div><div class="detail-val">${esc(r.server)}</div></div>
     <div class="detail-item"><div class="detail-key">${t.modalLang}</div><div class="detail-val">${lMap[r.lang]||r.lang}</div></div>
@@ -998,9 +1001,9 @@ async function saveAllianceTexts(){
 // ══════════════════════════════════════════════════════════════
 function exportCSV(){
   const rows=getFiltered();
-  const h=['Timestamp','Lingua','Nickname','Potenza','Server','Sedia','Intent','Alleanza','Nome','Bio','Stato','Note'];
+  const h=['Timestamp','Lingua','Nickname','Potenza','Server','Sedia','Intent','Alleanza','Nome','Bio','Stato','Note','Potenza T1','Uccisioni'];
   const lines=[h.join(',')];
-  rows.forEach(r=>lines.push([r.ts,r.lang,r.nickname,r.power,r.server,r.seat,r.intent,r.alliance,r.allianceName,`"${(r.bio||'').replace(/"/g,'""')}"`,r.status,r.notes].join(',')));
+  rows.forEach(r=>lines.push([r.ts,r.lang,r.nickname,r.power,r.server,r.seat,r.intent,r.alliance,r.allianceName,`"${(r.bio||'').replace(/"/g,'""')}"`,r.status,r.notes,r.t1,r.kills].join(',')));
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'}));
   a.download=`NGC_${new Date().toISOString().slice(0,10)}.csv`; a.click();
