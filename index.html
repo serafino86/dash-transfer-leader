@@ -148,6 +148,25 @@ tbody td{padding:11px 14px;vertical-align:middle;}
 .detail-val{font-size:14px;font-weight:600;color:var(--text);}
 .detail-item.full{grid-column:1/-1;}
 .modal-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.mact-back{color:var(--text);border-color:var(--border2);}
+/* telefono: dettagli scorrevoli (✕ e bottoni sempre raggiungibili), tabella a schede */
+.modal-overlay{overflow-y:auto;align-items:flex-start;}
+.modal{margin:auto;}
+@media(max-width:700px){
+  .modal-overlay{padding:10px;}
+  .modal{padding:20px 16px;}
+  .modal-close{font-size:24px;padding:6px 10px;top:8px;right:8px;}
+  .modal-actions .mact{flex:1 1 45%;padding:12px 8px;}
+  .tbl-wrap table,.tbl-wrap tbody{display:block;width:100%;}
+  .tbl-wrap thead{display:none;}
+  .tbl-wrap tr{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:12px 14px;border-bottom:1px solid var(--border2);}
+  .tbl-wrap td{display:block;border:none!important;padding:0!important;}
+  .tbl-wrap td:first-child{display:none;}
+  .tbl-wrap td:nth-child(2){width:100%;}
+  .tbl-wrap td:last-child{width:100%;}
+  .row-acts .mact,.row-acts .act-btn{flex:1 1 auto;padding:10px 6px;font-size:11px;}
+  .state-row{width:100%;}
+}
 .mact{font-family:var(--font-d);font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 20px;border:1px solid;cursor:pointer;background:transparent;}
 .mact-ok{color:var(--green);border-color:rgba(34,197,94,.4);}
 .mact-ok:hover{background:rgba(34,197,94,.1);}
@@ -415,7 +434,7 @@ const UI = {
     modalBio:'Presentazione', modalStatus:'Stato', modalNotes:'Note Leader', modalDate:'Ricevuta il',
     modalNoBio:'Nessuna', modalNoNotes:'Nessuna nota',
     intentMap:{yes_sure:'Sì!', interested:'Vuole info', maybe:'Forse', no:'No'},
-    btnWait:'⏸ In attesa', btnAccept:'✓ Accetta', btnReject:'✗ Rifiuta', btnReview:'⟳ In valutazione',
+    btnBack:'← Indietro', btnWait:'⏸ In attesa', btnAccept:'✓ Accetta', btnReject:'✗ Rifiuta', btnReview:'⟳ In valutazione',
     editorIntro:'<em>Come funziona:</em> scrivi il testo in italiano (requisiti + descrizione), poi clicca <em>Traduci automaticamente</em> — il sistema genera le 4 versioni linguistiche. Puoi rifinire ogni traduzione prima di salvare.',
     srcLangLabel:'Testo sorgente (italiano)', srcHint:'Scrivi qui · sarà tradotto nelle altre lingue',
     srcReqLabel:'Requisiti di accesso', srcDescLabel:'Descrizione alleanza',
@@ -449,7 +468,7 @@ const UI = {
     modalBio:'Présentation', modalStatus:'Statut', modalNotes:'Notes Leader', modalDate:'Reçu le',
     modalNoBio:'Aucune', modalNoNotes:'Aucune note',
     intentMap:{yes_sure:'Oui !', interested:'Veut infos', maybe:'Peut-être', no:'Non'},
-    btnWait:'⏸ En attente', btnAccept:'✓ Accepter', btnReject:'✗ Refuser', btnReview:'⟳ En évaluation',
+    btnBack:'← Retour', btnWait:'⏸ En attente', btnAccept:'✓ Accepter', btnReject:'✗ Refuser', btnReview:'⟳ En évaluation',
     editorIntro:'<em>Comment ça marche :</em> écris le texte en italien (exigences + description), puis clique <em>Traduire automatiquement</em> — le système génère les 4 versions linguistiques.',
     srcLangLabel:'Texte source (italien)', srcHint:'Écris ici · sera traduit dans les autres langues',
     srcReqLabel:'Conditions d\'accès', srcDescLabel:'Description de l\'alliance',
@@ -483,7 +502,7 @@ const UI = {
     modalBio:'Presentation', modalStatus:'Status', modalNotes:'Leader Notes', modalDate:'Received on',
     modalNoBio:'None', modalNoNotes:'No notes',
     intentMap:{yes_sure:'Yes!', interested:'Wants info', maybe:'Maybe', no:'No'},
-    btnWait:'⏸ Pending', btnAccept:'✓ Accept', btnReject:'✗ Reject', btnReview:'⟳ Under review',
+    btnBack:'← Back', btnWait:'⏸ Pending', btnAccept:'✓ Accept', btnReject:'✗ Reject', btnReview:'⟳ Under review',
     editorIntro:'<em>How it works:</em> write the text in Italian (requirements + description), then click <em>Auto-translate</em> — the system generates all 4 language versions.',
     srcLangLabel:'Source text (Italian)', srcHint:'Write here · will be translated into other languages',
     srcReqLabel:'Access requirements', srcDescLabel:'Alliance description',
@@ -517,7 +536,7 @@ const UI = {
     modalBio:'Vorstellung', modalStatus:'Status', modalNotes:'Leader-Notizen', modalDate:'Erhalten am',
     modalNoBio:'Keine', modalNoNotes:'Keine Notizen',
     intentMap:{yes_sure:'Ja!', interested:'Will Infos', maybe:'Vielleicht', no:'Nein'},
-    btnWait:'⏸ Ausstehend', btnAccept:'✓ Akzeptieren', btnReject:'✗ Ablehnen', btnReview:'⟳ In Prüfung',
+    btnBack:'← Zurück', btnWait:'⏸ Ausstehend', btnAccept:'✓ Akzeptieren', btnReject:'✗ Ablehnen', btnReview:'⟳ In Prüfung',
     editorIntro:'<em>So funktioniert es:</em> Schreib den Text auf Italienisch (Anforderungen + Beschreibung), dann klicke <em>Automatisch übersetzen</em> — das System erstellt alle 4 Sprachversionen.',
     srcLangLabel:'Quelltext (Italienisch)', srcHint:'Hier schreiben · wird in andere Sprachen übersetzt',
     srcReqLabel:'Zugangsbedingungen', srcDescLabel:'Allianz-Beschreibung',
@@ -795,7 +814,7 @@ function openModal(id){
     <div class="detail-item full"><div class="detail-key">${t.modalStatus}</div><div class="detail-val">${statusBadge(r.status,t)}</div></div>
     <div class="detail-item full"><div class="detail-key">${t.modalNotes}</div><div class="detail-val" style="font-size:13px;font-weight:400">${esc(r.notes)||'<em style="color:var(--dim)">'+t.modalNoNotes+'</em>'}</div></div>
     <div class="detail-item full"><div class="detail-key">${t.modalDate}</div><div class="detail-val" style="font-family:var(--font-m);font-size:12px">${r.ts}</div></div>`;
-  document.getElementById('modalActions').innerHTML=statusButtons(r,t,true);
+  document.getElementById('modalActions').innerHTML=`<button class="mact mact-back" onclick="closeModal()">${t.btnBack}</button>`+statusButtons(r,t,true);
   document.getElementById('modal').classList.add('open');
 }
 
